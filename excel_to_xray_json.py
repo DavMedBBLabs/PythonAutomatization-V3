@@ -5,7 +5,9 @@ import sys
 
 import requests
 from colorama import Fore, Style, init
+from dotenv import load_dotenv
 from openpyxl import load_workbook
+load_dotenv()
 from dotenv import load_dotenv
 load_dotenv() 
 
