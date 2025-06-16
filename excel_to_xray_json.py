@@ -3,25 +3,12 @@ import os
 import re
 import sys
 
-from openpyxl import load_workbook
-            data = response.json()
-        except ValueError:
-            print(f"{Fore.RED}Error: respuesta de autenticaci\u00f3n no es JSON v\u00e1lido.{Style.RESET_ALL}")
-            sys.exit(1)
-
-        token = None
-        if isinstance(data, dict):
-            token = data.get("access_token") or data.get("token") or data.get("jwt")
-        elif isinstance(data, str):
-            token = data
-
-
-
 import requests
-from openpyxl import load_workbook
 from colorama import Fore, Style, init
+from openpyxl import load_workbook
+from dotenv import load_dotenv
+load_dotenv() 
 
-load_dotenv()
 init(autoreset=True)
 
 
@@ -45,12 +32,25 @@ def get_auth_token():
             timeout=10,
         )
         response.raise_for_status()
-        data = response.json()
-        token = data.get("access_token") or data.get("token") or data.get("jwt")
+
+        try:
+            data = response.json()
+        except ValueError:
+            print(f"{Fore.RED}Error: respuesta de autenticaci\u00f3n no es JSON v\u00e1lido.{Style.RESET_ALL}")
+            sys.exit(1)
+
+        token = None
+        if isinstance(data, dict):
+            token = data.get("access_token") or data.get("token") or data.get("jwt")
+        elif isinstance(data, str):
+            token = data
+
         if not token:
             print(f"{Fore.RED}Error: respuesta de autenticaci\u00f3n sin token.{Style.RESET_ALL}")
             sys.exit(1)
+
         return token
+
     except requests.RequestException as exc:
         print(f"{Fore.RED}Error obteniendo token: {exc}{Style.RESET_ALL}")
         sys.exit(1)
