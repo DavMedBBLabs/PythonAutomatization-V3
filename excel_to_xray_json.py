@@ -5,10 +5,10 @@ import sys
 
 import requests
 from colorama import Fore, Style, init
-from openpyxl import load_workbook
 from dotenv import load_dotenv
-load_dotenv() 
+from openpyxl import load_workbook
 
+load_dotenv()
 init(autoreset=True)
 
 
@@ -40,18 +40,14 @@ def get_auth_token():
             sys.exit(1)
 
         token = None
-    tests = []
-    current_test = None
-        if prev_test_id is None or test_id != prev_test_id:
-            current_test = {
-                "testtype": "Manual",
-                "xray_test_sets": [],
-            tests.append(current_test)
-        current_test["steps"].append({
-        prev_test_id = test_id
+        if isinstance(data, dict):
+            token = data.get("access_token") or data.get("token") or data.get("jwt")
+        elif isinstance(data, str):
+            token = data
 
-    for test in tests:
-    return {"tests": tests}
+        if not token:
+            print(f"{Fore.RED}Error: respuesta de autenticaci\u00f3n sin token.{Style.RESET_ALL}")
+            sys.exit(1)
 
         return token
 
@@ -71,8 +67,9 @@ def read_excel_data(excel_path, feature_number):
     repo_number = numbers[block_index] if numbers else ""
     repo_folder = f"Feature-{feature_number}/HU-{repo_number}"
 
-    tests = {}
+    tests = []
     prev_test_id = None
+    current_test = None
 
     for idx, row in enumerate(ws.iter_rows(values_only=True), start=1):
         if row is None or len(row) < 6:
@@ -100,10 +97,9 @@ def read_excel_data(excel_path, feature_number):
                 repo_number = numbers[block_index]
             repo_folder = f"Feature-{feature_number}/HU-{repo_number}"
 
-        prev_test_id = test_id
-
-        if test_id not in tests:
-            tests[test_id] = {
+        if prev_test_id is None or test_id != prev_test_id:
+            current_test = {
+                "testtype": "Manual",
                 "fields": {
                     "summary": summary,
                     "description": description,
@@ -112,20 +108,24 @@ def read_excel_data(excel_path, feature_number):
                 },
                 "steps": [],
                 "xray_test_repository_folder": repo_folder,
+                "xray_test_sets": [],
             }
-        tests[test_id]["steps"].append({
+            tests.append(current_test)
+        current_test["steps"].append({
             "action": step,
             "data": data_col,
             "result": expected,
         })
 
+        prev_test_id = test_id
+
     return tests
 
 
 def generate_xray_json(tests, project_key):
-    for test in tests.values():
+    for test in tests:
         test["fields"]["project"]["key"] = project_key
-    return {"tests": list(tests.values())}
+    return {"tests": tests}
 
 
 def process_excel_to_json(file_name, project_key, feature_number):
