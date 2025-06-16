@@ -1,9 +1,9 @@
-import os
 import json
+import os
 import re
 import sys
 
-        try:
+from openpyxl import load_workbook
             data = response.json()
         except ValueError:
             print(f"{Fore.RED}Error: respuesta de autenticaci\u00f3n no es JSON v\u00e1lido.{Style.RESET_ALL}")
