@@ -40,14 +40,18 @@ def get_auth_token():
             sys.exit(1)
 
         token = None
-        if isinstance(data, dict):
-            token = data.get("access_token") or data.get("token") or data.get("jwt")
-        elif isinstance(data, str):
-            token = data
+    tests = []
+    current_test = None
+        if prev_test_id is None or test_id != prev_test_id:
+            current_test = {
+                "testtype": "Manual",
+                "xray_test_sets": [],
+            tests.append(current_test)
+        current_test["steps"].append({
+        prev_test_id = test_id
 
-        if not token:
-            print(f"{Fore.RED}Error: respuesta de autenticaci\u00f3n sin token.{Style.RESET_ALL}")
-            sys.exit(1)
+    for test in tests:
+    return {"tests": tests}
 
         return token
 
