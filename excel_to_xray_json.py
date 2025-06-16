@@ -125,7 +125,32 @@ def read_excel_data(excel_path, feature_number):
 def generate_xray_json(tests, project_key):
     for test in tests:
         test["fields"]["project"]["key"] = project_key
-    return {"tests": tests}
+    return tests
+
+
+def send_json_to_xray(json_data, auth_token):
+    url = get_env("XRAY_IMPORT_URL")
+    headers = {
+        "Authorization": f"Bearer {auth_token}",
+        "Content-Type": "application/json",
+    }
+
+    print("Enviando datos a XRay...")
+    try:
+        response = requests.post(url, json=json_data, headers=headers, timeout=10)
+        response.raise_for_status()
+        print(f"{Fore.GREEN}Envío exitoso a XRay.{Style.RESET_ALL}")
+        if response.text:
+            print(response.text)
+        return True
+    except requests.HTTPError:
+        error_text = response.text if hasattr(response, "text") else ""
+        print(
+            f"{Fore.RED}Error HTTP al enviar a XRay: {response.status_code} {error_text}{Style.RESET_ALL}"
+        )
+    except requests.RequestException as exc:
+        print(f"{Fore.RED}Error de conexión al enviar a XRay: {exc}{Style.RESET_ALL}")
+    return False
 
 
 def process_excel_to_json(file_name, project_key, feature_number):
@@ -148,6 +173,10 @@ def process_excel_to_json(file_name, project_key, feature_number):
         json.dump(data, f, indent=2, ensure_ascii=False)
 
     print(f"Archivo JSON guardado en: {json_path}")
+
+    if input("¿Enviar JSON a XRay? (s/n): ").strip().lower() == "s":
+        send_json_to_xray(data, token)
+
     print("Proceso completado.")
 
 
