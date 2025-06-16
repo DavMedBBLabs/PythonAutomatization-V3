@@ -2,8 +2,20 @@ import os
 import json
 import re
 import sys
-from collections import defaultdict
-from dotenv import load_dotenv
+
+        try:
+            data = response.json()
+        except ValueError:
+            print(f"{Fore.RED}Error: respuesta de autenticaci\u00f3n no es JSON v\u00e1lido.{Style.RESET_ALL}")
+            sys.exit(1)
+
+        token = None
+        if isinstance(data, dict):
+            token = data.get("access_token") or data.get("token") or data.get("jwt")
+        elif isinstance(data, str):
+            token = data
+
+
 
 import requests
 from openpyxl import load_workbook
