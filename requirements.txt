@@ -1,0 +1,4 @@
+openpyxl
+requests
+colorama
+python-dotenv
