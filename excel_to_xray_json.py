@@ -3,11 +3,13 @@ import json
 import re
 import sys
 from collections import defaultdict
+from dotenv import load_dotenv
 
 import requests
 from openpyxl import load_workbook
 from colorama import Fore, Style, init
 
+load_dotenv()
 init(autoreset=True)
 
 

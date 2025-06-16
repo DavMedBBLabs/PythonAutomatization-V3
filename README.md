@@ -13,6 +13,16 @@ Set the following environment variables before running the script:
 - `PATH_EXCEL` – directory containing the Excel files.
 - `PATH_JSON` – directory where the JSON files will be generated.
 
+#### Crear entorno virtual
+```bash
+python -m venv .venv
+```
+
+#### Ejecutar entorno virtual
+```bash
+.\.venv\Scripts\activate
+```
+
 Install dependencies:
 
 ```bash
